@@ -1,5 +1,8 @@
+from run_app import app, db
+
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from db_setup import app, db
+
 
 class User(db.Model):
     """ model for table users """
@@ -17,7 +20,7 @@ class BucketList(db.Model):
     created_by = created_by = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    done = db.Column(db.Boolean, default=False)
+    items = db.relationship('Item', backref='bucketlists', cascade='all,delete', passive_deletes=True)
 
 class Item(db.Model):
     """ model for table items """
@@ -26,6 +29,7 @@ class Item(db.Model):
     item_name = db.Column(db.String(60), index = True)
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
-    bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.bucketlist_id"))
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.bucketlist_id", ondelete="CASCADE"))
+    done = db.Column(db.Boolean, default=False)
 
 db.create_all(bind='__all__')
