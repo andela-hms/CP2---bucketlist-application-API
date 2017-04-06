@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint
-from flask_restful import Api, Resource, reqparse, fields, marshal_with
+from flask_restful import Api, Resource, reqparse, fields, marshal
 
 from models import BucketList, Item
 from run_app import app, db
@@ -34,7 +34,6 @@ class BucketListAPI(Resource):
             help = 'No BucketList name provided', location = 'json')
         super(BucketListAPI, self).__init__()
     
-    @marshal_with(bucket_list_fields, envelope='Bucketlists')
     def get(self, id=None):
 
         """ List all the created bucket lists and single ones too """
@@ -44,7 +43,7 @@ class BucketListAPI(Resource):
         else:
             bucketlists = BucketList.query.all()
 
-            return bucketlists
+            return marshal(bucketlists, bucket_list_fields)
 
     def post(self):
         """ Create a new bucket list """
@@ -60,14 +59,33 @@ class BucketListAPI(Resource):
         db.session.add(new_bucketlist)
         db.session.commit()
 
+        return marshal(new_bucketlist, bucket_list_fields)
+
     def put(self, id):
         """ Update a bucket list """
-        pass
+        this_bucket_list = BucketList.query.filter_by(bucketlist_id=id).first()
+        if not this_bucket_list:
+            return {'error': 'bucketlist with id {} does not exists'.format(id)}
+        args = self.reqparse.parse_args()
+        name = args['bucketlist_name']
+
+        update_bucketlist = BucketList.query.filter_by(bucketlist_id=id).first()
+        update_bucketlist.bucketlist_name = name
+        db.session.commit()
+
+        return marshal(update_bucketlist, bucket_list_fields)
 
     def delete(self, id):
         """ Delete a single bucket list """
-        pass
+        this_bucket_list = BucketList.query.filter_by(bucketlist_id=id).first()
+        if not this_bucket_list:
+            return {'error': 'bucketlist with id {} does not exists'.format(id)}
 
+        db.session.delete(this_bucket_list)
+        db.session.commit()
+
+        return {'error': 'bucketlist with id {} has been deleted'.format(id)}
+        
 class ItemAPI(Resource):
     """ Creates endpoints for ItemAPI """
     def __init__(self):
