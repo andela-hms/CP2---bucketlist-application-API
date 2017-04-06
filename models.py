@@ -17,6 +17,12 @@ class User(db.Model):
         """ Creates a hash value from password passed """
         self.password_hash = pwd_context.encrypt(password)
 
+    def verify_pass(self, password):
+        """ Compare hashed password from db with password """
+
+        # returns bolean
+        return pwd_context.verify(password, self.password_hash)
+
 class BucketList(db.Model):
     """ model for table bucketlists """
     __tablename__ = 'bucketlists'
