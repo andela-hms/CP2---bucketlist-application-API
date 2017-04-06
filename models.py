@@ -3,6 +3,7 @@ from run_app import app, db
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+from passlib.apps import custom_app_context as pwd_context
 
 class User(db.Model):
     """ model for table users """
@@ -11,6 +12,10 @@ class User(db.Model):
     username = db.Column(db.String(64), index = True)
     email_address = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
+
+    def hash_this_pass(self, password):
+        """ Creates a hash value from password passed """
+        self.password_hash = pwd_context.encrypt(password)
 
 class BucketList(db.Model):
     """ model for table bucketlists """
