@@ -85,7 +85,7 @@ class BucketListAPI(Resource):
         db.session.commit()
 
         return {'error': 'bucketlist with id {} has been deleted'.format(id)}
-        
+
 class ItemAPI(Resource):
     """ Creates endpoints for ItemAPI """
     def __init__(self):
@@ -107,13 +107,28 @@ class ItemAPI(Resource):
         db.session.add(new_item)
         db.session.commit()
 
+        return marshal(new_item, item_fields)
+
     def put(self, bucketlist_id, item_id):
         """ Update a bucket list item """
-        pass
+        bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id).first()
+        item_exists = Item.query.filter_by(item_id=item_id).first()
+
+        if not (bucketlist_exists or item_exists):
+            return {'error': 'bucketlist_id or item_id does not exists'}
+
+        args = self.reqparse.parse_args()
+        name = args['item_name']
+
+        update_item = Item.query.filter_by(item_id=item_id).first()
+        update_item.item_name = name
+        db.session.commit()
+
+        return marshal(update_item, item_fields)
 
     def delete(self, bucketlist_id, item_id):
         """ Delete an item in a bucket list """
         pass
 
 api.add_resource(BucketListAPI, '/bucketlists/', '/bucketlists/<int:id>/', endpoint='bucketlists')
-api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', endpoint='items')
+api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', '/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
