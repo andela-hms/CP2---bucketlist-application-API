@@ -9,13 +9,6 @@ from run_app import app, db
 blueprint = Blueprint('bucket_list', __name__)
 api = Api(blueprint)
 
-bucket_list_fields = { 'bucketlist_id' : fields.Integer,
-                        'bucketlist_name': fields.String,
-                        'created_by' : fields.Integer,
-                        'date_created': fields.DateTime,
-                        'date_modified': fields.DateTime
-}
-
 item_fields = { 'item_id' : fields.Integer,
                         'item_name': fields.String,
                         'created_by' : fields.Integer,
@@ -23,6 +16,14 @@ item_fields = { 'item_id' : fields.Integer,
                         'date_modified': fields.DateTime,
                         'bucketlist_id' : fields.Integer,
                         'done': fields.Boolean
+}
+
+bucket_list_fields = { 'bucketlist_id' : fields.Integer,
+                        'bucketlist_name': fields.String,
+                        'created_by' : fields.Integer,
+                        'items': fields.Nested(item_fields),
+                        'date_created': fields.DateTime,
+                        'date_modified': fields.DateTime
 }
 
 class BucketListAPI(Resource):
@@ -37,9 +38,13 @@ class BucketListAPI(Resource):
     def get(self, id=None):
 
         """ List all the created bucket lists and single ones too """
-        bucketlists = BucketList.query.all()
+        if id:
+            this_bucket_list = BucketList.query.filter_by(bucketlist_id=id).first()
+            return this_bucket_list
+        else:
+            bucketlists = BucketList.query.all()
 
-        return bucketlists
+            return bucketlists
 
     def post(self):
         """ Create a new bucket list """
@@ -67,11 +72,22 @@ class ItemAPI(Resource):
     """ Creates endpoints for ItemAPI """
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('item_name', type = str, required = True,
+            help = 'No Item name provided', location = 'json')
         super(ItemAPI, self).__init__()
 
     def post(self, bucketlist_id):
         """ Create a new item in bucket list based on the bucketlist_id """
-        pass
+        args = self.reqparse.parse_args()
+        name = args['item_name']
+        bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id).first()
+
+        if not bucketlist_exists:
+            return {'error': 'bucketlist_id {} does not exists'.format(bucketlist_id)}
+
+        new_item = Item(item_name=name, bucketlist_id=bucketlist_id)
+        db.session.add(new_item)
+        db.session.commit()
 
     def put(self, bucketlist_id, item_id):
         """ Update a bucket list item """
@@ -81,4 +97,5 @@ class ItemAPI(Resource):
         """ Delete an item in a bucket list """
         pass
 
-api.add_resource(BucketListAPI, '/bucketlists/', endpoint = 'bucketlists')
+api.add_resource(BucketListAPI, '/bucketlists/', '/bucketlists/<int:id>/', endpoint='bucketlists')
+api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', endpoint='items')
