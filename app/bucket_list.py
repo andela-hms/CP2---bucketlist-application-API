@@ -1,11 +1,13 @@
-from flask import Flask
-from app.models import BucketList, Item
+from flask import Flask, Blueprint
 from flask_restful import Api, Resource, reqparse
-from app.db_setup import db
 
-# Declare an instance Flask-Restful Api class
-app = Flask(__name__)
-api = Api(app)
+from models import BucketList, Item
+from run_app import app, db
+
+
+# Declare the Blueprint app
+blueprint = Blueprint('bucket_list', __name__)
+api = Api(blueprint)
 
 class BucketListAPI(Resource):
     """ Creates endpoints for BucketListAPI """
@@ -17,11 +19,23 @@ class BucketListAPI(Resource):
 
     def get(self, id=None):
         """ List all the created bucket lists and single ones too """
-        pass
+        bucketlists = BucketList.query.all()
+
+        return bucketlists
 
     def post(self):
         """ Create a new bucket list """
-        pass
+        args = self.reqparse.parse_args()
+        name = args['bucketlist_name']
+
+        check_duplicate = BucketList.query.filter_by(bucketlist_name=name).first()
+
+        if check_duplicate:
+            return {'error': 'bucketlist_name {} already exists'.format(name)}
+        
+        new_bucketlist = BucketList(bucketlist_name=name)
+        db.session.add(new_bucketlist)
+        db.session.commit()
 
     def put(self, id):
         """ Update a bucket list """
@@ -48,3 +62,5 @@ class ItemAPI(Resource):
     def delete(self, bucketlist_id, item_id):
         """ Delete an item in a bucket list """
         pass
+
+api.add_resource(BucketListAPI, '/bucketlists/', endpoint = 'bucketlists')
