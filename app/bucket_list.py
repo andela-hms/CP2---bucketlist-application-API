@@ -84,7 +84,7 @@ class BucketListAPI(Resource):
         db.session.delete(this_bucket_list)
         db.session.commit()
 
-        return {'error': 'bucketlist with id {} has been deleted'.format(id)}
+        return {'message': 'bucketlist with id {} has been deleted'.format(id)}
 
 class ItemAPI(Resource):
     """ Creates endpoints for ItemAPI """
@@ -101,7 +101,7 @@ class ItemAPI(Resource):
         bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id).first()
 
         if not bucketlist_exists:
-            return {'error': 'bucketlist_id {} does not exists'.format(bucketlist_id)}
+            return {'error': 'Bucketlist_id {} does not exists'.format(bucketlist_id)}
 
         new_item = Item(item_name=name, bucketlist_id=bucketlist_id)
         db.session.add(new_item)
@@ -128,7 +128,16 @@ class ItemAPI(Resource):
 
     def delete(self, bucketlist_id, item_id):
         """ Delete an item in a bucket list """
-        pass
+        bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id).first()
+        item_exists = Item.query.filter_by(item_id=item_id).first()
+
+        if not (bucketlist_exists or item_exists):
+            return {'error': 'bucketlist_id or item_id does not exists'}
+
+        db.session.delete(item_exists)
+        db.session.commit()
+
+        return {'message': 'Item with id {} has been deleted'.format(item_id)}
 
 api.add_resource(BucketListAPI, '/bucketlists/', '/bucketlists/<int:id>/', endpoint='bucketlists')
 api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', '/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
