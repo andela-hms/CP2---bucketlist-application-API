@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, fields, marshal_with
 
 from models import BucketList, Item
 from run_app import app, db
@@ -9,6 +9,22 @@ from run_app import app, db
 blueprint = Blueprint('bucket_list', __name__)
 api = Api(blueprint)
 
+bucket_list_fields = { 'bucketlist_id' : fields.Integer,
+                        'bucketlist_name': fields.String,
+                        'created_by' : fields.Integer,
+                        'date_created': fields.DateTime,
+                        'date_modified': fields.DateTime
+}
+
+item_fields = { 'item_id' : fields.Integer,
+                        'item_name': fields.String,
+                        'created_by' : fields.Integer,
+                        'date_created': fields.DateTime,
+                        'date_modified': fields.DateTime,
+                        'bucketlist_id' : fields.Integer,
+                        'done': fields.Boolean
+}
+
 class BucketListAPI(Resource):
     """ Creates endpoints for BucketListAPI """
     def __init__(self):
@@ -16,8 +32,10 @@ class BucketListAPI(Resource):
         self.reqparse.add_argument('bucketlist_name', type = str, required = True,
             help = 'No BucketList name provided', location = 'json')
         super(BucketListAPI, self).__init__()
-
+    
+    @marshal_with(bucket_list_fields, envelope='Bucketlists')
     def get(self, id=None):
+
         """ List all the created bucket lists and single ones too """
         bucketlists = BucketList.query.all()
 
