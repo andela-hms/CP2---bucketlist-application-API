@@ -4,13 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 from passlib.apps import custom_app_context as pwd_context
-
+from itsdangerous import (TimedJSONWebSignatureSerializer
+   as Serializer, BadSignature, SignatureExpired)
 class User(db.Model):
     """ model for table users """
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(64), index = True)
-    email_address = db.Column(db.String(64))
+    email_address = db.Column(db.String(64), unique=True)
     password_hash = db.Column(db.String(128))
 
     def hash_this_pass(self, password):
@@ -19,9 +20,15 @@ class User(db.Model):
 
     def verify_pass(self, password):
         """ Compare hashed password from db with password """
-
         # returns bolean
         return pwd_context.verify(password, self.password_hash)
+
+    def generate_auth_token(self, expiration=1000):
+        serializer = Serializer(app.config['SECRET_KEY'], expires_in =expiration)
+
+        # return generated token 
+        return serializer.dumps({'id: self.user_id'})
+
 
 class BucketList(db.Model):
     """ model for table bucketlists """
