@@ -28,5 +28,4 @@ class Item(db.Model):
     date_modified = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.bucketlist_id"))
 
-
-# db.create_all()
+db.create_all(bind='__all__')
