@@ -1,11 +1,18 @@
-from flask import Flask
-from app.models import BucketList, Item
-from flask_restful import Api, Resource, reqparse
-from app.db_setup import db
+from flask import Flask, Blueprint
+from flask_restful import Api, Resource, reqparse, fields, marshal,inputs
 
-# Declare an instance Flask-Restful Api class
-app = Flask(__name__)
-api = Api(app)
+from models import User
+from run_app import app, db
+
+# Declare Blueprint
+user_blueprint = Blueprint('user_endpoint', __name__)
+auth_api = Api(user_blueprint)
+
+user_fields = { 'user_id': fields.Integer,
+                        'username': fields.String,
+                        'email_address': fields.String,
+                        'password_hash': fields.String
+}
 
 class LoginAPI(Resource):
     """ Creates endpoints for LoginAPI """
@@ -21,16 +28,58 @@ class LoginAPI(Resource):
         pass
 
 class RegisterAPI(Resource):
-        """ Creates endpoints for RegisterAPI """
+
+    """ Creates endpoints for RegisterAPI """
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('username', type = str, required = True,
-            help = 'No username provided', location = 'json')           
-        self.reqparse.add_argument('email', type=inputs.regex(r"[^@]+@[^@]+\.[^@]+"), required=True,
-                                   help="Invalid email format", location='json')
-        self.reqparse.add_argument('password', type = str, required = True,
-            help = 'No password provided', location = 'json')            
+        self.reqparse.add_argument('username', type = str, required = True, help = 'No username provided', location = 'json')           
+        self.reqparse.add_argument('email', type=inputs.regex(r"[^@]+@[^@]+\.[^@]+"), required=True, help="Invalid email format", location='json')
+        self.reqparse.add_argument('password', type = str, required = True, help = 'No password provided', location = 'json')
+        super(RegisterAPI, self).__init__()
 
     def post(self):
-        """ Register a user """
-        pass
+        """ Registers a user """
+
+        args = self.reqparse.parse_args()
+
+        # Check whether user already exists
+        check_user = User.query.filter_by(email_address=args['email']).first()
+
+        if not check_user:
+            try:
+                check_user = User(username=args['username'], email_address=args['email'], password_hash=args['password'])
+                # hash password before saving to db
+                check_user.hash_this_pass(args['password'])
+
+                # add user to db
+                db.session.add(check_user)
+                db.session.commit()
+
+                # generate auth token
+                token = check_user.generate_auth_token(check_user.user_id)
+
+                # message on successful registration
+                json_response = {
+                    'message' : 'Registration successful',
+                    'token' : 'token.decode()'
+                }
+                
+                return json_response, 201
+
+            except:
+                json_response = {
+                    'message' : 'Unable to register new user: {}'.format(args['username'])
+                }
+
+                return json_response, 400
+        else:
+            # user exists
+            json_response = {
+                    'message' : 'User already exists'
+                }
+
+            return json_response, 409
+
+auth_api.add_resource(LoginAPI, '/auth/login/', endpoint='login')
+auth_api.add_resource(RegisterAPI, '/auth/register/', endpoint='register')
+
