@@ -18,14 +18,44 @@ class LoginAPI(Resource):
     """ Creates endpoints for LoginAPI """
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('email_address', type = str, required = True,
-            help = 'No email address provided', location = 'json')
+        self.reqparse.add_argument('email', type = str, required=True, help = 'No email address provided', location = 'json')
         self.reqparse.add_argument('password', type = str, required = True,
             help = 'No password provided', location = 'json')            
 
     def post(self):
         """ Logs a user in """
-        pass
+        args = self.reqparse.parse_args()
+
+        # fetch user data
+        check_user = User.query.filter_by(email_address=args['email']).first()
+
+        try:
+            if check_user:
+                if check_user.verify_pass(args['password']):
+                    give_token = check_user.generate_auth_token()
+
+                    json_response = {
+                        'message': 'Login Successful',
+                        'auth_token': give_token.decode()
+                    }
+                    return json_response, 200
+                
+                else:
+                    json_response = {
+                        'error': 'Invalid Password'
+                    }
+                    return json_response, 401
+            else:
+                json_response = {
+                        'error': 'User with email {} does not exist'.format(args['email'])
+                    }
+                return json_response, 404
+        except:
+            json_response = {
+                        'error': 'Login Failed'
+                    }
+            return json_response, 500
+
 
 class RegisterAPI(Resource):
 
