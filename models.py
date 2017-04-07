@@ -9,8 +9,8 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 class User(db.Model):
     """ model for table users """
     __tablename__ = 'users'
-    user_id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(64), index = True)
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True)
     email_address = db.Column(db.String(64), unique=True)
     password_hash = db.Column(db.String(128))
 
@@ -24,10 +24,10 @@ class User(db.Model):
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration=1000):
-        serializer = Serializer(app.config['SECRET_KEY'], expires_in =expiration)
+        serializer = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
 
         # return generated token 
-        return serializer.dumps({'id: self.user_id'})
+        return serializer.dumps({'id': self.user_id})
 
 
 class BucketList(db.Model):
