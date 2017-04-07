@@ -29,6 +29,20 @@ class User(db.Model):
         # return generated token 
         return serializer.dumps({'id': self.user_id})
 
+    @staticmethod
+    def verify_auth_token(token):
+        """ verify authentication token """
+        serializer = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = serializer.loads(token)
+        except SignatureExpired:
+            # valid token that has expired
+            return None    
+        except BadSignature:
+            # invalid token
+            return None    
+        user = User.query.get(data['id'])
+        return user
 
 class BucketList(db.Model):
     """ model for table bucketlists """
