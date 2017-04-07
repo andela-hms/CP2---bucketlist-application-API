@@ -4,8 +4,7 @@ from flask_restful import Api, Resource, reqparse, fields, marshal
 from models import BucketList, Item
 from run_app import app, db
 
-
-# Declare the Blueprint app
+# Declare Blueprint
 blueprint = Blueprint('bucket_list', __name__)
 api = Api(blueprint)
 
@@ -41,9 +40,38 @@ class BucketListAPI(Resource):
             this_bucket_list = BucketList.query.filter_by(bucketlist_id=id).first()
             return this_bucket_list
         else:
-            bucketlists = BucketList.query.all()
+            self.reqparse.add_argument('q', type = str, location = 'json')
+            self.reqparse.add_argument('limit', type = int, location = 'json', default=20)
+            self.reqparse.add_argument('page', type = int, location = 'json', default=1)
 
-            return marshal(bucketlists, bucket_list_fields)
+            args = self.reqparse.parse_args()
+            q = args['q']
+            limit = args['limit']
+            page = args['page']
+
+            if q:
+                bucketlists = BucketList.query.filter_by(BucketList.bucketlist_name.like('%'+q+'%')).paginate(page, limit, False)
+            else:
+                bucketlists = BucketList.query.all().paginate(page, limit, False)
+            
+            if not bucketlists:
+                return {'message': 'bucketlists not found'}, 404
+            
+            if bucketlists.has_prev:
+                prev_page = request.url + '?page=' + str(page + 1) + '&limit=' + str(limit)
+            else:
+                prev_page = 'None'
+
+            if bucketlists.has_next:
+                next_page = request.url + '?page=' + str(page - 1) + '&limit=' + str(limit)
+            else:
+                next_page = 'None'
+
+            return { 'message': {'next_page':next_page,
+                                'prev_page': prev_page,
+                                'total': bucketlists.pages,
+                                'bucketlists': marshal(bucketlists.items, bucket_list_fields)}}, 200
+
 
     def post(self):
         """ Create a new bucket list """
