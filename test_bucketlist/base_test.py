@@ -3,7 +3,7 @@ from flask_testing import TestCase
 
 
 from run_app import app, db
-from models import User
+from models import User, BucketList, Item
 
 class BaseTestCase(TestCase):
 
