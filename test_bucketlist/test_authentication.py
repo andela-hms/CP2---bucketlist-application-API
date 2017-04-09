@@ -6,11 +6,10 @@ class AuthTestCase(BaseTestCase):
     def test_login(self):
         """ Tests whether a user can login """
         data = json.dumps(dict(
-                email="test@user.com",
-                password="thispass"
+            email="test@user.com",
+            password="thispass"
         ))
 
-        headers = json.dumps({"Content-Type":"application/json","Accept":"application/json"})
         response = self.client.post(URL+"login/", data=data, content_type="application/json")
         self.assertIn("auth_token",response.data.decode())
 
@@ -22,6 +21,5 @@ class AuthTestCase(BaseTestCase):
             password="newuserpass"
             ))
 
-        headers = json.dumps({"Content-Type":"application/json","Accept":"application/json"})
         response = self.client.post(URL+"register/", data=data, content_type="application/json")
         self.assertIn("Registration successful",response.data.decode())
