@@ -48,11 +48,11 @@ class BucketListAPI(Resource):
         super(BucketListAPI, self).__init__()
 
     def get(self, id=None):
-
         """ List all the created bucket lists and single ones too """
         if id:
             this_bucket_list = BucketList.query.filter_by(bucketlist_id=id, created_by=g.user.user_id).first()
-            return marshal(this_bucket_list, bucket_list_fields), 200        
+            return marshal(this_bucket_list, bucket_list_fields), 200
+
         else:
             
             self.reqparse = reqparse.RequestParser()
@@ -74,12 +74,12 @@ class BucketListAPI(Resource):
                 return {'message': 'bucketlists not found'}, 404
 
             if bucketlists.has_prev:
-                prev_page = request.url + '?page=' + str(page + 1) + '&limit=' + str(limit)
+                prev_page = request.url + '?page=' + str(page - 1) + '&limit=' + str(limit)
             else:
                 prev_page = 'None'
 
             if bucketlists.has_next:
-                next_page = request.url + '?page=' + str(page - 1) + '&limit=' + str(limit)
+                next_page = request.url + '?page=' + str(page + 1) + '&limit=' + str(limit)
             else:
                 next_page = 'None'
 
@@ -185,6 +185,6 @@ class ItemAPI(Resource):
 
         return {'message': 'Item with id {} has been deleted'.format(item_id)}
 
-api.add_resource(BucketListAPI, '/bucketlists/<int:id>/', endpoint='bucketlist')
-api.add_resource(BucketListAPI, '/bucketlists/', endpoint='bucketlists')
+api.add_resource(BucketListAPI, '/bucketlists/<int:id>/', endpoint='bucketlists')
+api.add_resource(BucketListAPI, '/bucketlists/', endpoint='bucketlist')
 api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', '/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
