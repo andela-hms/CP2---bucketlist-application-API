@@ -44,7 +44,8 @@ class BucketListTestCase(BaseTestCase):
 
         response = self.client.post(URL, data=new_bucket_list, \
         content_type="application/json", headers=self.headers)
-        self.assertIn("bucketlist_name", response.data.decode())
+        data = json.loads(response.data.decode())
+        self.assertTrue(data["bucketlist_name"] == "Kenya")
 
     def tearDown(self):
         """ Clear resources after tests are run """
