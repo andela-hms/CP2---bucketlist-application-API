@@ -1,4 +1,4 @@
-# CP2---bucketlist-application-API
+# CP2-bucketlist-application-API
 This is an API for an online Bucket List service using Flask.
 
 [![Humphrey Musonye](https://img.shields.io/badge/BucketList%20API-Humphrey%20Musonye-brightgreen.svg)]()
@@ -66,16 +66,16 @@ To test the API endpoints, use [Postman](https://www.getpostman.com/).
 
 | Actions        | Description           | Requires Authentication |
 | ------------- |:-------------:| -------------:|
-| POST auth/login    | Logs in a user | False |
-| POST auth/register     | Register a new user | False |
-| POST api/v1.0/bucketlists | Create a new bucket list   | True |
-| GET api/v1.0/bucketlists      | List all created bucket lists | True |
-| GET api/v1.0/bucketlists?q=`<query_string>`      | Search for a bucket list by name | True |
-| GET api/v1.0/bucketlists?limit=`<limit>`      | Paginates bucket list results. | True |
+| POST /auth/login/    | Logs in a user | False |
+| POST /auth/register/     | Register a new user | False |
+| POST api/v1.0/bucketlists/ | Create a new bucket list   | True |
+| GET api/v1.0/bucketlists/      | List all created bucket lists | True |
+| GET api/v1.0/bucketlists/?q=`<query_string>`      | Search for a bucket list by name | True |
+| GET api/v1.0/bucketlists/?limit=`<limit>`      | Paginates bucket list results | True |
 | GET api/v1.0/bucketlists/`<bucketlist_id>`     | get single bucket list | True |
 | PUT api/v1.0/bucketlists/`<bucketlist_id>` | update single bucket list | True |
 | DELETE api/v1.0/bucketlists/`<bucketlist_id>`      | Delete a single bucket list | True |
-| POST api/v1.0/bucketlists/`<bucketlist_id>`/items      | Create a new item in a bucket list | True |
+| POST api/v1.0/bucketlists/`<bucketlist_id>`/items/      | Create a new item in a bucket list | True |
 | PUT api/v1.0/bucketlists/`<bucketlist_id>`/items/`<item_id>` | Update an item in a bucket list | True |
 | DELETE api/v1.0/bucketlists/`<bucketlist_id>`/items/`<item_id>`      | Delete an item in a bucket list | True |
 
@@ -225,7 +225,7 @@ To filter results to a given criteria use:
 
 Search using the **q** parameter:
 
-**http://127.0.0.1:5000/api/v1.0/bucketlists?q=beaches**
+**http://127.0.0.1:5000/api/v1.0/bucketlists/?q=beaches**
 
 
 # TESTS
