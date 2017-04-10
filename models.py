@@ -24,7 +24,7 @@ class User(db.Model):
         # returns bolean
         return pwd_context.verify(password, self.password_hash)
 
-    def generate_auth_token(self, expiration=1000):
+    def generate_auth_token(self, expiration=10000):
         """ Calculates and returns an auth token """
         serializer = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
 
