@@ -12,7 +12,7 @@ auth_user = HTTPTokenAuth(scheme="Token")
 
 @auth_user.verify_token
 def verify_token(token):
-
+    """ Validate token passed """
     # verify user token
     user = User.verify_auth_token(token)
     if not user:
@@ -20,21 +20,23 @@ def verify_token(token):
     g.user = user
     return True
 
-item_fields = { 'item_id' : fields.Integer,
-                        'item_name': fields.String,
-                        'created_by' : fields.Integer,
-                        'date_created': fields.DateTime,
-                        'date_modified': fields.DateTime,
-                        'bucketlist_id' : fields.Integer,
-                        'done': fields.Boolean
+item_fields = {
+    'item_id' : fields.Integer,
+    'item_name': fields.String,
+    'created_by' : fields.Integer,
+    'date_created': fields.DateTime,
+    'date_modified': fields.DateTime,
+    'bucketlist_id' : fields.Integer,
+    'done': fields.Boolean
 }
 
-bucket_list_fields = { 'bucketlist_id' : fields.Integer,
-                        'bucketlist_name': fields.String,
-                        'created_by' : fields.Integer,
-                        'items': fields.Nested(item_fields),
-                        'date_created': fields.DateTime,
-                        'date_modified': fields.DateTime
+bucket_list_fields = {
+    'bucketlist_id' : fields.Integer,
+    'bucketlist_name': fields.String,
+    'created_by' : fields.Integer,
+    'items': fields.Nested(item_fields),
+    'date_created': fields.DateTime,
+    'date_modified': fields.DateTime
 }
 
 class BucketListAPI(Resource):
@@ -44,32 +46,35 @@ class BucketListAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('bucketlist_name', type=str, required=True, help='No BucketList name provided', location = 'json')
+        self.reqparse.add_argument('bucketlist_name', type=str, \
+        required=True, help='No BucketList name provided', location='json')
         super(BucketListAPI, self).__init__()
 
     def get(self, id=None):
         """ List all the created bucket lists and single ones too """
         if id:
-            this_bucket_list = BucketList.query.filter_by(bucketlist_id=id, created_by=g.user.user_id).first()
+            this_bucket_list = BucketList.query.filter_by(bucketlist_id=id, \
+            created_by=g.user.user_id).first()
             return marshal(this_bucket_list, bucket_list_fields), 200
 
         else:
-            
+
             self.reqparse = reqparse.RequestParser()
-            self.reqparse.add_argument('q', type = str, location = 'args')
-            self.reqparse.add_argument('limit', type = int, location = 'args',default=20)
-            self.reqparse.add_argument('page', type = int, location = 'args', default=1)
+            self.reqparse.add_argument('q', type=str, location='args')
+            self.reqparse.add_argument('limit', type=int, location='args', default=20)
+            self.reqparse.add_argument('page', type=int, location='args', default=1)
 
             args = self.reqparse.parse_args()
-            q = args['q']
+            query = args['q']
             limit = args['limit']
             page = args['page']
-            
-            if q:
-                bucketlists = BucketList.query.filter(BucketList.bucketlist_name.like('%'+q+'%'), BucketList.created_by==g.user.user_id).paginate(page, limit, False)
+
+            if query:
+                bucketlists = BucketList.query.filter(BucketList.bucketlist_name.like('%'+query+'%'), \
+                BucketList.created_by == g.user.user_id).paginate(page, limit, False)
             else:
                 bucketlists = BucketList.query.filter_by(created_by=g.user.user_id).paginate(page, limit, False)
-            
+
             if not bucketlists:
                 return {'message': 'bucketlists not found'}, 404
 
@@ -83,10 +88,13 @@ class BucketListAPI(Resource):
             else:
                 next_page = 'None'
 
-            return { 'message': {'next_page':next_page,
-                                'prev_page': prev_page,
-                                'total': bucketlists.pages},
-                                'bucketlists': marshal(bucketlists.items, bucket_list_fields)}, 200
+            return {
+                'message': {
+                    'next_page':next_page,
+                    'prev_page': prev_page,
+                    'total': bucketlists.pages},
+                'bucketlists': marshal(bucketlists.items, bucket_list_fields)
+            }, 200
 
 
     def post(self):
@@ -132,12 +140,12 @@ class BucketListAPI(Resource):
 
 class ItemAPI(Resource):
     """ Creates endpoints for ItemAPI """
-    decorators = [auth_user.login_required]    
+    decorators = [auth_user.login_required]
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('item_name', type = str, required = True,
-            help = 'No Item name provided', location = 'json')
+        self.reqparse.add_argument('item_name', type=str, required=True, \
+        help='No Item name provided', location='json')
         super(ItemAPI, self).__init__()
 
     def post(self, bucketlist_id):
@@ -185,6 +193,6 @@ class ItemAPI(Resource):
 
         return {'message': 'Item with id {} has been deleted'.format(item_id)}
 
-api.add_resource(BucketListAPI, '/bucketlists/<int:id>/', endpoint='bucketlists')
-api.add_resource(BucketListAPI, '/bucketlists/', endpoint='bucketlist')
-api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', '/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
+api.add_resource(BucketListAPI, '/bucketlists/<int:id>/', '/bucketlists/', endpoint='bucketlists')
+api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', \
+'/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
