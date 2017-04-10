@@ -76,7 +76,7 @@ class BucketListAPI(Resource):
                 .paginate(page, limit, False)
 
             if not bucketlists:
-                return {'message': 'bucketlists not found'}, 404
+                return {'message': 'bucketlists not found'}, 200
 
             if bucketlists.has_prev:
                 prev_page = request.url + '?page=' + str(page - 1) + '&limit=' + str(limit)
@@ -183,7 +183,7 @@ class ItemAPI(Resource):
                 if name:
                     item_exists.item_name = name
 
-                if done in [True,False]:
+                if done in [True, False]:
                     item_exists.done = done
 
                 db.session.commit()
@@ -209,6 +209,7 @@ class ItemAPI(Resource):
 
         return {'message': 'Item with id {} has been deleted'.format(item_id)}
 
-api.add_resource(BucketListAPI, '/api/v1.0/bucketlists/<int:id>/', '/api/v1.0/bucketlists/', endpoint='bucketlists')
+api.add_resource(BucketListAPI, '/api/v1.0/bucketlists/<int:id>/', \
+'/api/v1.0/bucketlists/', endpoint='bucketlists')
 api.add_resource(ItemAPI, '/api/v1.0/bucketlists/<int:bucketlist_id>/items/', \
 '/api/v1.0/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
