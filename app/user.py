@@ -1,8 +1,8 @@
-from flask import Flask, Blueprint
-from flask_restful import Api, Resource, reqparse, fields, marshal,inputs
+from flask import Blueprint
+from flask_restful import Api, Resource, reqparse, fields, inputs
 
 from models import User
-from run_app import app, db
+from run_app import db
 
 # Declare Blueprint
 user_blueprint = Blueprint('user_endpoint', __name__)
@@ -89,9 +89,6 @@ class RegisterAPI(Resource):
                 # add user to db
                 db.session.add(check_user)
                 db.session.commit()
-
-                # generate auth token
-                token = check_user.generate_auth_token(check_user.user_id)
 
                 # message on successful registration
                 json_response = {
