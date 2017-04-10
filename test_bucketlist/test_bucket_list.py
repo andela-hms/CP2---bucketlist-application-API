@@ -51,4 +51,3 @@ class BucketListTestCase(BaseTestCase):
         db.session.remove()
         db.drop_all()
         os.remove('test.db')
-        
