@@ -193,6 +193,6 @@ class ItemAPI(Resource):
 
         return {'message': 'Item with id {} has been deleted'.format(item_id)}
 
-api.add_resource(BucketListAPI, '/bucketlists/<int:id>/', '/bucketlists/', endpoint='bucketlists')
-api.add_resource(ItemAPI, '/bucketlists/<int:bucketlist_id>/items/', \
-'/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')
+api.add_resource(BucketListAPI, '/api/v1.0/bucketlists/<int:id>/', '/api/v1.0/bucketlists/', endpoint='bucketlists')
+api.add_resource(ItemAPI, '/api/v1.0/bucketlists/<int:bucketlist_id>/items/', \
+'/api/v1.0/bucketlists/<int:bucketlist_id>/items/<int:item_id>', endpoint='items')

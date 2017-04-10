@@ -24,7 +24,8 @@ class ItemTestCase(BaseTestCase):
             password="thispass"
         ))
 
-        response = self.client.post("/auth/login/", data=data, content_type="application/json")
+        response = self.client.post("/api/v1.0/auth/login/", \
+        data=data, content_type="application/json")
         # response = response.data.decode()
         data = json.loads(response.data.decode())
         auth_token = data['auth_token']
@@ -40,7 +41,7 @@ class ItemTestCase(BaseTestCase):
             bucketlist_name="Kenya"
         ))
 
-        url = "/bucketlists/"
+        url = "/api/v1.0/bucketlists/"
 
         self.client.post(url, data=new_bucket_list, \
         content_type="application/json", headers=self.headers)
@@ -51,7 +52,7 @@ class ItemTestCase(BaseTestCase):
             item_name="Go on a safari"
         ))
 
-        url = "/bucketlists/1/items/"
+        url = "/api/v1.0/bucketlists/1/items/"
 
         response = self.client.post(url, data=new_item, \
         content_type="application/json", headers=self.headers)

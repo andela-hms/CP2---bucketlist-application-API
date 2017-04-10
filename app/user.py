@@ -114,6 +114,6 @@ class RegisterAPI(Resource):
 
             return json_response, 409
 
-auth_api.add_resource(LoginAPI, '/auth/login/', endpoint='login')
-auth_api.add_resource(RegisterAPI, '/auth/register/', endpoint='register')
+auth_api.add_resource(LoginAPI, '/api/v1.0/auth/login/', endpoint='login')
+auth_api.add_resource(RegisterAPI, '/api/v1.0/auth/register/', endpoint='register')
 

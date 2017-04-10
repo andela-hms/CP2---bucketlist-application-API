@@ -5,7 +5,7 @@ from run_app import app, db
 from base_test import BaseTestCase
 from models import User, BucketList, Item
 
-URL = "/bucketlists/"
+URL = "/api/v1.0/bucketlists/"
 
 class BucketListTestCase(BaseTestCase):
     """ Test suite for BucketList API """
@@ -26,7 +26,8 @@ class BucketListTestCase(BaseTestCase):
             password="thispass"
         ))
 
-        response = self.client.post("/auth/login/", data=data, content_type="application/json")
+        response = self.client.post("/api/v1.0/auth/login/", \
+        data=data, content_type="application/json")
         data = json.loads(response.data.decode())
         auth_token = data['auth_token']
 
@@ -58,7 +59,7 @@ class BucketListTestCase(BaseTestCase):
             bucketlist_name="Silicon Savannah"
         ))
 
-        url = "/bucketlists/1/"
+        url = "/api/v1.0/bucketlists/1/"
 
         response = self.client.put(url, data=edit_bucket_list, \
         content_type="application/json", headers=self.headers)

@@ -1,7 +1,7 @@
 import json
 from base_test import BaseTestCase
 
-URL = "/auth/"
+URL = "/api/v1.0/auth/"
 class AuthTestCase(BaseTestCase):
     """ Testsuite for Login API """
     def test_login(self):
