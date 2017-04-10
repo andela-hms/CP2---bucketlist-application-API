@@ -5,7 +5,7 @@ from run_app import app, db
 from base_test import BaseTestCase
 from models import User, BucketList, Item
 
-class BucketListTestCase(BaseTestCase):
+class ItemTestCase(BaseTestCase):
     """ Test suite for ItemAPI """
     def setUp(self):
         """ Create resources to get auth token for login and access """
