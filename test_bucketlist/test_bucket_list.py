@@ -47,6 +47,11 @@ class BucketListTestCase(BaseTestCase):
         data = json.loads(response.data.decode())
         self.assertTrue(data["bucketlist_name"] == "Kenya")
 
+    def test_get_bucketlists(self):
+        """ Tests whether a user can GET created bucketlists """
+        response = self.client.get(URL, content_type="application/json", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+
     def tearDown(self):
         """ Clear resources after tests are run """
         db.session.remove()
