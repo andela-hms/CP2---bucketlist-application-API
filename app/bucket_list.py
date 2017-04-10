@@ -102,7 +102,7 @@ class BucketListAPI(Resource):
         args = self.reqparse.parse_args()
         name = args['bucketlist_name']
 
-        check_duplicate = BucketList.query.filter_by(bucketlist_name=name).first()
+        check_duplicate = BucketList.query.filter_by(bucketlist_name=name, created_by=g.user.user_id).first()
 
         if check_duplicate:
             return {'error': 'bucketlist_name {} already exists'.format(name)}
