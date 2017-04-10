@@ -23,7 +23,6 @@ def verify_token(token):
 item_fields = {
     'item_id' : fields.Integer,
     'item_name': fields.String,
-    'created_by' : fields.Integer,
     'date_created': fields.DateTime,
     'date_modified': fields.DateTime,
     'bucketlist_id' : fields.Integer,
@@ -73,7 +72,8 @@ class BucketListAPI(Resource):
                 bucketlists = BucketList.query.filter(BucketList.bucketlist_name.like('%'+query+'%'), \
                 BucketList.created_by == g.user.user_id).paginate(page, limit, False)
             else:
-                bucketlists = BucketList.query.filter_by(created_by=g.user.user_id).paginate(page, limit, False)
+                bucketlists = BucketList.query.filter_by(created_by=g.user.user_id) \
+                .paginate(page, limit, False)
 
             if not bucketlists:
                 return {'message': 'bucketlists not found'}, 404
@@ -147,8 +147,9 @@ class ItemAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('item_name', type=str, required=True, \
+        self.reqparse.add_argument('item_name', type=str, \
         help='No Item name provided', location='json')
+        self.reqparse.add_argument('done', default=False, type=bool, location='json')
         super(ItemAPI, self).__init__()
 
     def post(self, bucketlist_id):
@@ -170,19 +171,30 @@ class ItemAPI(Resource):
     def put(self, bucketlist_id, item_id):
         """ Update a bucket list item """
         bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id).first()
-        item_exists = Item.query.filter_by(item_id=item_id).first()
 
-        if not (bucketlist_exists or item_exists):
-            return {'error': 'bucketlist_id or item_id does not exists'}
+        if bucketlist_exists:
+            item_exists = Item.query.filter_by(item_id=item_id).first()
 
-        args = self.reqparse.parse_args()
-        name = args['item_name']
+            if item_exists:
+                args = self.reqparse.parse_args()
+                name = args['item_name']
+                done = args['done']
 
-        update_item = Item.query.filter_by(item_id=item_id).first()
-        update_item.item_name = name
-        db.session.commit()
+                if name:
+                    item_exists.item_name = name
 
-        return marshal(update_item, item_fields)
+                if done in [True,False]:
+                    item_exists.done = done
+
+                db.session.commit()
+
+                return marshal(item_exists, item_fields)
+
+            else:
+                return {'error': 'item_id does not exists'}
+
+        else:
+            return {'error': 'bucketlist_id does not exists'}
 
     def delete(self, bucketlist_id, item_id):
         """ Delete an item in a bucket list """
