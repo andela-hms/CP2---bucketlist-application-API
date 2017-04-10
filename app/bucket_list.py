@@ -102,7 +102,8 @@ class BucketListAPI(Resource):
         args = self.reqparse.parse_args()
         name = args['bucketlist_name']
 
-        check_duplicate = BucketList.query.filter_by(bucketlist_name=name, created_by=g.user.user_id).first()
+        check_duplicate = BucketList.query.filter_by(bucketlist_name=name, \
+        created_by=g.user.user_id).first()
 
         if check_duplicate:
             return {'error': 'bucketlist_name {} already exists'.format(name)}
@@ -115,7 +116,8 @@ class BucketListAPI(Resource):
 
     def put(self, id):
         """ Update a bucket list """
-        this_bucket_list = BucketList.query.filter_by(bucketlist_id=id).first()
+        this_bucket_list = BucketList.query.filter_by(bucketlist_id=id, \
+        created_by=g.user.user_id).first()
         if not this_bucket_list:
             return {'error': 'bucketlist with id {} does not exists'.format(id)}
         args = self.reqparse.parse_args()
@@ -129,7 +131,8 @@ class BucketListAPI(Resource):
 
     def delete(self, id):
         """ Delete a single bucket list """
-        this_bucket_list = BucketList.query.filter_by(bucketlist_id=id).first()
+        this_bucket_list = BucketList.query.filter_by(bucketlist_id=id, \
+        created_by=g.user.user_id).first()
         if not this_bucket_list:
             return {'error': 'bucketlist with id {} does not exists'.format(id)}
 
@@ -152,7 +155,8 @@ class ItemAPI(Resource):
         """ Create a new item in bucket list based on the bucketlist_id """
         args = self.reqparse.parse_args()
         name = args['item_name']
-        bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id).first()
+        bucketlist_exists = BucketList.query.filter_by(bucketlist_id=bucketlist_id, \
+        created_by=g.user.user_id).first()
 
         if not bucketlist_exists:
             return {'error': 'Bucketlist_id {} does not exists'.format(bucketlist_id)}
