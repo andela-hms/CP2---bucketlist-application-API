@@ -52,6 +52,18 @@ class BucketListTestCase(BaseTestCase):
         response = self.client.get(URL, content_type="application/json", headers=self.headers)
         self.assertEqual(response.status_code, 200)
 
+    def test_update_bucketlist(self):
+        """ Tests whether a user can create a new bucketlist """
+        edit_bucket_list = json.dumps(dict(
+            bucketlist_name="Silicon Savannah"
+        ))
+
+        url = "/bucketlists/1/"
+
+        response = self.client.put(url, data=edit_bucket_list, \
+        content_type="application/json", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+
     def tearDown(self):
         """ Clear resources after tests are run """
         db.session.remove()
