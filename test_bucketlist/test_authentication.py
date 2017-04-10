@@ -3,6 +3,7 @@ from base_test import BaseTestCase
 
 URL = "/auth/"
 class AuthTestCase(BaseTestCase):
+    """ Testsuite for Login API """
     def test_login(self):
         """ Tests whether a user can login """
         data = json.dumps(dict(
@@ -11,7 +12,7 @@ class AuthTestCase(BaseTestCase):
         ))
 
         response = self.client.post(URL+"login/", data=data, content_type="application/json")
-        self.assertIn("auth_token",response.data.decode())
+        self.assertIn("auth_token", response.data.decode())
 
     def test_register(self):
         """ Tests whether a new user can be created successfully """
@@ -22,4 +23,4 @@ class AuthTestCase(BaseTestCase):
             ))
 
         response = self.client.post(URL+"register/", data=data, content_type="application/json")
-        self.assertIn("Registration successful",response.data.decode())
+        self.assertIn("Registration successful", response.data.decode())
