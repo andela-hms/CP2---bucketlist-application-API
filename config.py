@@ -5,7 +5,6 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = 'new-key-here'
     SQLALCHEMY_DATABASE_URI = "sqlite:///bucketlist.db"
 
 class ProductionConfig(Config):
