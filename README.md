@@ -68,16 +68,18 @@ To test the API endpoints, use [Postman](https://www.getpostman.com/).
 | ------------- |:-------------:| -------------:|
 | POST /auth/login/    | Logs in a user | False |
 | POST /auth/register/     | Register a new user | False |
-| POST api/v1.0/bucketlists/ | Create a new bucket list   | True |
-| GET api/v1.0/bucketlists/      | List all created bucket lists | True |
-| GET api/v1.0/bucketlists/?q=`<query_string>`      | Search for a bucket list by name | True |
-| GET api/v1.0/bucketlists/?limit=`<limit>`      | Paginates bucket list results | True |
-| GET api/v1.0/bucketlists/`<bucketlist_id>`     | get single bucket list | True |
-| PUT api/v1.0/bucketlists/`<bucketlist_id>` | update single bucket list | True |
-| DELETE api/v1.0/bucketlists/`<bucketlist_id>`      | Delete a single bucket list | True |
-| POST api/v1.0/bucketlists/`<bucketlist_id>`/items/      | Create a new item in a bucket list | True |
-| PUT api/v1.0/bucketlists/`<bucketlist_id>`/items/`<item_id>` | Update an item in a bucket list | True |
-| DELETE api/v1.0/bucketlists/`<bucketlist_id>`/items/`<item_id>`      | Delete an item in a bucket list | True |
+| POST /api/v1.0/bucketlists/ | Create a new bucket list   | True |
+| GET /api/v1.0/bucketlists/      | List all created bucket lists | True |
+| GET /api/v1.0/bucketlists/?q=`<query_string>`      | Search for a bucket list by name | True |
+| GET /api/v1.0/bucketlists/?limit=`<limit>`      | Paginates bucket list results | True |
+| GET /api/v1.0/bucketlists/`<bucketlist_id>`     | get single bucket list | True |
+| PUT /api/v1.0/bucketlists/`<bucketlist_id>` | update single bucket list | True |
+| DELETE /api/v1.0/bucketlists/`<bucketlist_id>`      | Delete a single bucket list | True |
+| GET /api/v1.0/bucketlists/items/    | List all created items | True |
+| GET /api/v1.0/bucketlists/items/`<item_id>`     | get single item | True |
+| POST /api/v1.0/bucketlists/`<bucketlist_id>`/items/      | Create a new item in a bucket list | True |
+| PUT /api/v1.0/bucketlists/`<bucketlist_id>`/items/`<item_id>` | Update an item in a bucket list | True |
+| DELETE /api/v1.0/bucketlists/`<bucketlist_id>`/items/`<item_id>`      | Delete an item in a bucket list | True |
 
 - **Register a new user**
 
