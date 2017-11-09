@@ -66,8 +66,8 @@ To test the API endpoints, use [Postman](https://www.getpostman.com/).
 
 | Actions        | Description           | Requires Authentication |
 | ------------- |:-------------:| -------------:|
-| POST /auth/login/    | Logs in a user | False |
-| POST /auth/register/     | Register a new user | False |
+| POST /api/v1.0/auth/login/    | Logs in a user | False |
+| POST /api/v1.0/auth/register/     | Register a new user | False |
 | POST /api/v1.0/bucketlists/ | Create a new bucket list   | True |
 | GET /api/v1.0/bucketlists/      | List all created bucket lists | True |
 | GET /api/v1.0/bucketlists/?q=`<query_string>`      | Search for a bucket list by name | True |
@@ -84,7 +84,7 @@ To test the API endpoints, use [Postman](https://www.getpostman.com/).
 - **Register a new user**
 
 append **api/v1.0/register**  to the tail end of the link. i.e:
-**http://127.0.0.1:5000/api/v1.0/register**
+**http://127.0.0.1:5000/api/v1.0/auth/register/**
 
 - Ensure the dropdown to the left of the URL bar is a POST request
 
@@ -132,8 +132,7 @@ This project utilizes **Token Based Authentication** to restrict access to certa
 To create a bucketlist, make a **POST** request to this URI:
 **http://127.0.0.1:5000/api/v1.0/bucketlists/**
 
-Go to the Authorization tab then to the "type" dropdown option, select Basic Auth and add your token in the username field.
-
+Go to the Headers tab then to create a new key called Authorization, paste in your token from the login response in the value field. Remember to precede your token with the Token parameter.
 Give your Bucketlist a name and hit send, i.e:
 
 ```
